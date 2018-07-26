@@ -18,7 +18,8 @@ x3 = earnings before interest and taxes / total assets </br>
 x4 = book value of equity / total liabilities </br>
 
 ## construct model
-zscore = 3.25 + 6.56*x1 + 3.26*x2 + 6.72*x3 + 1.05*x4
+zscore = 3.25 + 6.56\*x1 + 
+zscore = 3.25 + 6.56x1 + 3.26*x2 + 6.72*x3 + 1.05*x4
 
 ## predict
 Zones of discriminations:</br>
