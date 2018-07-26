@@ -3,9 +3,9 @@
 
 | database | table | item | decription |
 |:------------- |:---------------:| -------------:| -------------:|
-| col 3 is      | some wordy text |         $1600 |
-| col 2 is      | centered        |           $12 |
-| zebra stripes | are neat        |            $1 |
+| filesync      |shiborprices     |   SHIBOR3M.IR |
+| filesync      |asharebalancesheet |  wind_code,ann_dt,report_period,tot_assets,cap_stk,st_borrow,lt_borrow |
+| filesync      |ashareeodprices    | s_info_windcode,trade_dt,s_dq_close |
 
 ## feature engineering
 
