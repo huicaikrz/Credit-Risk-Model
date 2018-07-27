@@ -15,6 +15,8 @@ equity = s_dq_close\*cap_stk </br>
 debt = st_borrow + 0.5\*lt_borrow
 book value of asset = total asset
 
+##construct model
+$\sum_{i=0}^N
 
 
 
