@@ -2,7 +2,8 @@
 
 ## data source
 
-csv file
+parameter estimation: csv file
+model test: 'all_data','all_alpha','all_beta' comes from the outcome of parameter estimation
 
 ## feature engineering
 features: ["3-M TREASURY RATE", "STOCK INDEX RETURN", "DTD_Level", "SIZE_Level",
@@ -19,6 +20,8 @@ Since some of the parameters need to be smaller than zero, here we use the SLSQP
 
 
 ## predict
+
+model test: here we only do in-sample model test including calculating accuracy ratio, AUC, K-S
 
 ## 
 
