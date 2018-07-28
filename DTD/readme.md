@@ -16,7 +16,17 @@ debt = st_borrow + 0.5\*lt_borrow
 book value of asset = total asset
 
 ## construct model
-$\sum_{i=0}^N$
+
+view equity as a call option and E = max(0,A-D) </br>
+where E is equity, A is fair value of asset and D is debt </br>
+based on BS model, we could derive the relationship between E, A and D </br>
+E can be estimated through the stock price in the market, D is the short-term debt + half of the long-term debt </br>
+
+Based on the likelihood function, we could estimate the parameters \mu, \sgima, calculate A by solving function and then calculate DTD. 
+
+## predict
+
+DTD can be viewed as the probability of the default probability to some sense. We select 5% of the points and view them as problematic points.
 
 
 
