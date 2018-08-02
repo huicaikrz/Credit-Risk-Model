@@ -10,7 +10,7 @@ import numpy as np
 from scipy.optimize import minimize
 import random
 
-#read data and select the part that I need
+#数据读取并选取需要的部分
 path = 'C:/Users/lenovo/Desktop/FT'
 data = pd.read_csv(path + '/train_test_data_with_many_indexes.csv')
 
@@ -63,12 +63,13 @@ def Jacob_alpha(alpha,data,bail = False, t_bail = 224):
     '''
     global survive,default,otherexit,rest
     x = np.array(data)
-    
+    #在feature前添加1列1,用于计算截距项的梯度   
     new_x = np.append(np.ones(len(x)).reshape(len(x),1),x[:,5:],axis = 1)
+    #bailout下的梯度计算方法
     if bail == True:
         N = 14
         ifbail = data['TimeInd'] > t_bail
-        
+        #计算梯度的中间过程
         f = np.exp(alpha[0]*np.exp(-alpha[1]*(x[:,1]-t_bail))*ifbail+np.dot(x[:,5:],alpha[3:])+alpha[2])
         L = survive * np.exp(-f/12) + default * (1 - np.exp(-f/12)) + otherexit * np.exp(-f/12) + rest
         #calculate the gradient of the bail out parameters
@@ -79,6 +80,7 @@ def Jacob_alpha(alpha,data,bail = False, t_bail = 224):
         X = survive * np.exp(-f/12)*f/(-12)+ default*(-np.exp(-f/12)*f/(-12))+ otherexit*np.exp(-f/12)*f/(-12)
         J = np.tile(X/L,(N-2,1)).T * new_x
         return np.array([J0,J1] + list(-np.sum(J,axis =0)))        
+    #不带bailout时的梯度计算
     else:
         N = 12
         f = np.exp(np.dot(x[:,5:],alpha[1:])+alpha[0])
@@ -97,17 +99,20 @@ def Jacob_beta(beta,data):
     J = np.tile(X/L,(N,1)).T * new_x
     return -np.sum(J,axis =0)
 
-#return the resample data,d is the initial data,t is the estimate time and
-#K equals the nondefualt company against defaults 
+#由于未违约公司远多于违约公司,进行采样
 def resample(d,t,K):
+    '''
+    该函数用于重采样,d是原始数据,t是预测期,K是采样后未违约点/违约点
+    '''
+    #取出样本内的公司
     bb = d['TimeInd'] <= max(d['ExitInd']) -t-1
-    #default company position
+    #取出违约公司的位置
     aa = bb & (d['status'] == 1) & ((d['ExitInd']-d['TimeInd'])<= (t+1))
-    #all nondefault
+    #取出所有没有exit的公司的位置
     cc = bb & (d['status'] == 0)
-    #number of defaults
+    #总共的违约公司样本点
     n = sum(aa)
-    #shuffle the position of nondefault company and select 2n from them
+    
     pos = list(d.index[cc])
     random.shuffle(pos)
     #form the new train data
@@ -117,17 +122,25 @@ def resample(d,t,K):
     
 #the following is the main function for parameter estimation
 all_alpha = [];all_beta = []
-horizon =12
+horizon = 12
 import time
 begin = time.clock()
+#估计时是否用bailout
 bail = False
+
+#某些参数具有经济意义,增加bound的限定,这里记录参数位置
 bd_pos = [-1,-3,-4,-5]
+
+["3-M TREASURY RATE", "STOCK INDEX RETURN", "DTD_Level", "SIZE_Level",
+              "CSTA_Level", "NITA_Level", "DTD_Trend", "SIZE_Trend", "NITA_Trend",
+              "MKBK", "CSTA_Trend"]
 all_data = []
 
 K = 3 
 for t in range(horizon):
     #resample
     data = resample(d,t,K)
+    #all_data是list,每一个位置对应不同horizon下的采样
     all_data.append(data)
     
     print(t)
@@ -144,7 +157,7 @@ for t in range(horizon):
     Alpha = np.array([0]*N)
     Beta = np.array([0]*12)
     survive,default,otherexit,rest = check_status(t)
-    
+    #参数估计,这里由于有bound限制,使用SLSQP方法
     opt_Alpha = minimize(loss_alpha,x0 = Alpha,method = 'SLSQP',args = (data,bail),bounds = bound,jac = Jacob_alpha)
     #if max(abs(opt_Alpha.jac)) > 1:
     #    opt_Alpha = minimize(loss_alpha,x0 = Alpha,method = 'TNC',bounds = bound,args = (data,bail))
@@ -159,4 +172,5 @@ for t in range(horizon):
 
 print(time.clock()-begin)
 
+all_data.to_csv
 
